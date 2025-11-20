@@ -1,0 +1,35 @@
+NEXRPC YAZILIM LISANS VE SORUMLULUK REDDI SOZLESMESI
+
+Telif Hakki (c) 2025 Nexuby. Tum Haklari Saklidir.
+
+1. KABUL
+Bu yazilimi indirerek, kurarak veya kullanarak, asagidaki sartlari ve kosullari kabul etmis sayilirsiniz. Eger bu kosullari kabul etmiyorsaniz, yazilimi derhal cihazinizdan kaldiriniz.
+
+2. LISANS VE KULLANIM HAKLARI
+Bu yazilim (NexRPC), son kullanicilara ucretsiz olarak sunulmaktadir. Kullanicilar:
+- Yazilimi kisisel amaclarla sinirsiz sureyle kullanabilir.
+- Yazilimin kaynak kodlarini inceleyebilir.
+- Yazilimi degistirebilir veya ozellestirebilir.
+
+Ancak, kullanicilar sunlari yapamaz:
+- Yazilimi ucretli olarak satamaz veya ticari bir urunun parcasi olarak pazarlayamaz.
+- Yazilimin telif hakki bildirimlerini veya gelistirici imzalarini kaldiramaz.
+- Yazilimi kotu amacli yazilim yaymak veya yasa disi faaliyetlerde bulunmak icin kullanamaz.
+
+3. SORUMLULUK REDDI BEYANI (DISCLAIMER)
+Bu yazilim herhangi bir garanti olmaksizin "OLDUGU GIBI" sunulmaktadir. Gelistirici, yazilimin kusursuz oldugunu, kesintisiz calisacagini veya belirli bir amaca uygun oldugunu garanti etmez.
+
+Bu yazilimi kullanmak tamamen kullanicinin sorumlulugundadir. Gelistirici;
+- Yazilimin kullanimi nedeniyle olusabilecek veri kayiplarindan,
+- Donanim veya yazilim hasarlarindan,
+- Discord veya diger ucuncu taraf platformlardaki hesap yasaklanmalarindan (ban),
+- Guvenlik ihlallerinden veya diger dogrudan/dolayli zararlardan
+hicbir sekilde sorumlu tutulamaz.
+
+4. UCUNCU TARAF PLATFORMLAR
+Bu yazilim, Discord API'leri ile etkilesime girmektedir ancak Discord Inc. ile resmi bir baglantisi, ortakligi veya onayi yoktur. Discord Hizmet Sartlari'na (ToS) aykiri kullanimlar nedeniyle dogabilecek her turlu sonuctan kullanici sorumludur. Kullanici, Discord'un kurallarina uymakla yukumludur.
+
+5. GUNCELLEMELER VE DEGISIKLIKLER
+Gelistirici, bu lisans sozlesmesini veya yazilimin ozelliklerini onceden bildirmeksizin degistirme hakkini sakli tutar.
+
+Son Guncelleme Tarihi: 20.11.2025

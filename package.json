@@ -1,0 +1,93 @@
+{
+  "name": "nexrpc-discord-game-status",
+  "version": "0.0.3",
+  "description": "NexRPC - Discord oyun durumu ayarlayıcı",
+  "main": "main.js",
+  "author": {"name": "Murat Bulut (Rynix)", "email": "info@nexuby.net"},
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder -mwl",
+    "build:mac": "electron-builder --mac",
+    "build:win": "electron-builder --win",
+    "build:linux": "electron-builder --linux"
+  },
+  "homepage": "https://nexuby.net",
+  "build": {
+    "appId": "com.discord.gamestatus",
+    "productName": "NexRPC - Discord Game Status",
+    "directories": {
+      "output": "dist",
+      "buildResources": "assets"
+    },
+    "files": [
+      "**/*",
+      "script.js",
+      "index.html",
+      "!**/node_modules/*/{CHANGELOG.md,README.md,README,readme.md,readme}",
+      "!**/node_modules/*/{test,__tests__,tests,powered-test,example,examples}",
+      "!**/node_modules/*.d.ts",
+      "!**/node_modules/.bin",
+      "!**/*.{iml,o,hprof,orig,pyc,pyo,rbc,swp,csproj,sln,xproj}",
+      "!.editorconfig",
+      "!**/._*",
+      "!**/{.DS_Store,.git,.hg,.svn,CVS,RCS,SCCS,.gitignore,.gitattributes}",
+      "!**/{__pycache__,thumbs.db,.flowconfig,.idea,.vs,.nyc_output}",
+      "!**/{appveyor.yml,.travis.yml,circle.yml}",
+      "!**/{npm-debug.log,yarn.lock,.yarn-integrity,.yarn-metadata.json}"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "assets/discord.ico",
+      "requestedExecutionLevel": "asInvoker"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": true,
+      "allowElevation": true,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "NexRPC - Discord Game Status",
+      "uninstallDisplayName": "NexRPC - Discord Game Status",
+      "installerIcon": "assets/discord.ico",
+      "uninstallerIcon": "assets/discord.ico",
+      "installerHeaderIcon": "assets/discord.ico",
+      "license": "license.txt",
+      "language": "1055",
+      "runAfterFinish": true
+    },
+    "mac": {
+      "target": "dmg",
+      "icon": "assets/discord.icns",
+      "category": "public.app-category.utilities"
+    },
+    "linux": {
+      "target": [
+        "AppImage",
+        "deb"
+      ],
+      "icon": "assets/discord.png",
+      "maintainer": "Murat Bulut <info@nexuby.net>",
+      "category": "Utility"
+    },
+    "asar": true,
+    "forceCodeSigning": false
+  },
+  "dependencies": {
+    "discord.js-selfbot-v13": "^3.5.1",
+    "electron-store": "^8.1.0",
+    "find-process": "^1.4.10",
+    "tree-kill": "^1.2.2"
+  },
+  "devDependencies": {
+    "electron": "^24.0.0",
+    "electron-builder": "^24.13.3"
+  }
+}

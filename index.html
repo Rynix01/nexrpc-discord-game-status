@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>NexRPC - Discord Aktivite Düzenleyici</title>
+    <script src="script.js"></script>
+    <style>
+      /* Özel scrollbar */
+      ::-webkit-scrollbar {
+        width: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #1a1b1e;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #4f46e5;
+        border-radius: 8px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #6366f1;
+      }
+
+      /* Smooth transitions */
+      * {
+        transition: all 0.2s ease;
+      }
+
+      /* Glass effect */
+      .glass {
+        background: rgba(30, 31, 34, 0.7);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+      }
+
+      .profile-card {
+        background: linear-gradient(
+          180deg,
+          rgba(30, 31, 34, 0.9) 0%,
+          rgba(30, 31, 34, 0.95) 100%
+        );
+      }
+
+      .profile-banner {
+        height: 120px;
+        background: linear-gradient(45deg, #5865f2, #9b59b6);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .profile-banner::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+          to bottom,
+          transparent 0%,
+          rgba(0, 0, 0, 0.4) 100%
+        );
+      }
+
+      .profile-content {
+        padding: 0 24px 24px;
+        margin-top: -48px;
+      }
+
+      .avatar-wrapper {
+        position: relative;
+        width: 92px;
+        height: 92px;
+        margin-bottom: 16px;
+      }
+
+      .avatar {
+        width: 92px;
+        height: 92px;
+        border-radius: 50%;
+        border: 6px solid #18191c;
+        background: #18191c;
+        overflow: hidden;
+      }
+
+      .status-indicator {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        border: 4px solid #18191c;
+      }
+
+      .preview-panel {
+        background: rgba(0, 0, 0, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 8px;
+        padding: 16px;
+        min-width: 260px;
+      }
+    </style>
+  </head>
+  <body
+    class="bg-gradient-to-br from-gray-900 via-indigo-950 to-gray-900 text-gray-100 min-h-screen"
+  >
+    <div class="container mx-auto px-4 py-8 max-w-2xl">
+      <div class="glass rounded-2xl shadow-2xl p-8">
+        <h2
+          class="text-3xl font-bold text-center mb-8 bg-gradient-to-r from-indigo-400 to-purple-400 text-transparent bg-clip-text"
+        >
+          NexRPC - Discord Aktivite Düzenleyici
+        </h2>
+
+        <!-- Token Section -->
+        <div id="token-section" class="space-y-4">
+          <div class="relative">
+            <input
+              type="password"
+              id="token"
+              placeholder="Discord Token'ınızı girin"
+              class="w-full px-6 py-3 bg-gray-900/50 rounded-xl border border-indigo-500/30 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
+            />
+          </div>
+          <button
+            onclick="setToken()"
+            class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-medium py-3 px-6 rounded-xl transition-all transform hover:scale-[1.02] active:scale-[0.98] hover:shadow-lg"
+          >
+            Giriş Yap
+          </button>
+        </div>
+
+        <!-- Token Nasıl Alınır Bölümü -->
+        <div id="how-to-get-token" class="glass rounded-xl p-6 space-y-4 mt-4">
+          <h3 class="text-lg font-semibold text-indigo-400 flex items-center">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+            </svg>
+            Token Nasıl Alınır?
+          </h3>
+          
+          <div class="space-y-3 text-sm text-gray-300">
+            <div class="flex items-start space-x-3">
+              <div class="flex-shrink-0 w-6 h-6 rounded-full bg-indigo-600 flex items-center justify-center text-white font-bold">1</div>
+              <div>
+                <p class="font-medium text-white">Discord'u tarayıcınızda açın ve geliştirici konsolunu açın</p>
+                <p class="text-gray-400 mt-1">Windows: <kbd class="px-2 py-1 bg-gray-800 rounded">Ctrl</kbd> + <kbd class="px-2 py-1 bg-gray-800 rounded">Shift</kbd> + <kbd class="px-2 py-1 bg-gray-800 rounded">I</kbd>  veya <kbd class="px-2 py-1 bg-gray-800 rounded">F12</kbd></p>
+              </div>
+            </div>
+            
+            <div class="flex items-start space-x-3">
+              <div class="flex-shrink-0 w-6 h-6 rounded-full bg-indigo-600 flex items-center justify-center text-white font-bold">2</div>
+              <div>
+                <p class="font-medium text-white">Konsola <code class="px-2 py-1 bg-gray-800 rounded">allow-pasting</code> yazın ve Enter'a basın</p>
+              </div>
+            </div>
+            
+            <div class="flex items-start space-x-3">
+              <div class="flex-shrink-0 w-6 h-6 rounded-full bg-indigo-600 flex items-center justify-center text-white font-bold">3</div>
+              <div>
+                <p class="font-medium text-white">Konsola aşağıdaki kodu yapıştırın ve Enter'a basın:</p>
+                <div class="bg-gray-900 rounded-lg p-3 mt-2 overflow-x-auto">
+                  <code class="text-xs text-indigo-300 whitespace-pre-wrap">window.webpackChunkdiscord_app.push([
+	[Symbol()],
+	{},
+	req => {
+		if (!req.c) return;
+		for (let m of Object.values(req.c)) {
+			try {
+				if (!m.exports || m.exports === window) continue;
+				if (m.exports?.getToken) return copy(m.exports.getToken());
+				for (let ex in m.exports) {
+					if (m.exports?.[ex]?.getToken && m.exports[ex][Symbol.toStringTag] !== 'IntlMessagesProxy') return copy(m.exports[ex].getToken());
+				}
+			} catch {}
+		}
+	},
+]);
+
+window.webpackChunkdiscord_app.pop();
+console.log('%cHata yok!', 'font-size: 50px');
+console.log(`%cToken panoya kopyalandı!`, 'font-size: 16px');</code>
+                </div>
+              </div>
+            </div>
+            
+            <div class="flex items-start space-x-3">
+              <div class="flex-shrink-0 w-6 h-6 rounded-full bg-green-600 flex items-center justify-center text-white font-bold">✓</div>
+              <div>
+                <p class="font-medium text-white">Token'iniz otomatik olarak panoya kopyalanacak!</p>
+                <p class="text-gray-400 mt-1">Şimdi yukarıdaki input alanına yapıştırabilirsiniz.</p>
+              </div>
+            </div>
+            
+            <div class="mt-4 p-3 bg-yellow-600/20 border border-yellow-600/40 rounded-lg">
+              <p class="text-yellow-300 text-xs flex items-center">
+                <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                </svg>
+                <span>Token'inizi kimseyle paylaşmayın! Güvenliğiniz için lütfen dikkatli olun.</span>
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Game Section -->
+        <div id="game-section" style="display: none" class="space-y-6">
+          <!-- Profil Kartı -->
+          <div class="profile-card rounded-xl overflow-hidden">
+            <!-- Banner -->
+            <div class="profile-banner">
+              <div
+                id="user-banner"
+                class="absolute inset-0 backdrop-blur-sm bg-opacity-50"
+              ></div>
+            </div>
+
+            <!-- Profil İçeriği -->
+            <div class="profile-content">
+              <!-- Avatar ve Kullanıcı Bilgileri -->
+              <div class="flex items-start space-x-4">
+                <div class="avatar-wrapper">
+                  <div class="avatar">
+                    <img
+                      id="user-avatar"
+                      src=""
+                      alt="Profil"
+                      class="w-full h-full object-cover"
+                    />
+                  </div>
+                  <div id="user-status" class="status-indicator"></div>
+                </div>
+
+                <div class="flex-1 space-y-2">
+                  <div class="flex items-baseline space-x-2">
+                    <h2
+                      id="user-name"
+                      class="text-2xl font-bold text-white"
+                    ></h2>
+                    <span
+                      id="user-discriminator"
+                      class="text-lg text-gray-400"
+                    ></span>
+                  </div>
+                  <div class="flex space-x-3 text-sm">
+                    <div class="glass px-3 py-1.5 rounded-md">
+                      <span class="text-gray-400">ID:</span>
+                      <span
+                        id="user-id"
+                        class="ml-1.5 text-indigo-300 font-medium"
+                      ></span>
+                    </div>
+                    <div class="glass px-3 py-1.5 rounded-md">
+                      <span class="text-gray-400">Oluşturulma:</span>
+                      <span
+                        id="user-created"
+                        class="ml-1.5 text-indigo-300 font-medium"
+                      ></span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Önizleme Paneli -->
+              <div class="preview-panel mt-4">
+                <h3
+                  class="text-sm font-medium text-indigo-400 mb-3 flex items-center"
+                >
+                  <svg
+                    class="w-4 h-4 mr-2"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                    <path
+                      fill-rule="evenodd"
+                      d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z"
+                      clip-rule="evenodd"
+                    />
+                  </svg>
+                  Aktivite Önizleme
+                </h3>
+                <div id="preview-content" class="space-y-2">
+                  <div
+                    id="preview-game"
+                    class="text-sm font-medium text-white"
+                  ></div>
+                  <div id="preview-details" class="text-xs text-gray-400"></div>
+                  <div id="preview-state" class="text-xs text-gray-400"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Oyun Ayarları Kartı -->
+          <div class="glass rounded-xl p-6 space-y-6">
+            <h3 class="text-xl font-medium text-indigo-400 mb-4">
+              Oyun/Aktivite Ayarları
+            </h3>
+
+            <!-- Ana Ayarlar -->
+            <div class="space-y-4">
+              <input
+                type="text"
+                id="game-name"
+                placeholder="Oyun/Aktivite Adı"
+                class="w-full px-6 py-3 bg-gray-900/50 rounded-xl border border-indigo-500/30 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
+              />
+
+              <select
+                id="game-type"
+                class="w-full px-6 py-3 bg-gray-900/50 rounded-xl border border-indigo-500/30 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 appearance-none"
+              >
+                <option value="0">🎮 Oynuyor</option>
+                <option value="1">📺 Yayında</option>
+                <option value="2">🎧 Dinliyor</option>
+                <option value="3">👀 İzliyor</option>
+                <option value="5">🏆 Yarışıyor</option>
+              </select>
+
+              <!-- Detaylı Ayarlar -->
+              <div class="glass rounded-xl p-6">
+                <button
+                  onclick="toggleDetails()"
+                  class="flex items-center justify-between w-full text-indigo-400 hover:text-indigo-300 font-medium"
+                >
+                  <span>Detaylı Ayarlar</span>
+                  <svg
+                    id="arrow"
+                    class="w-5 h-5 transform transition-transform"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </button>
+
+                <div id="details-content" class="hidden mt-6 space-y-6">
+                  <div class="space-y-4">
+                    <input
+                      type="text"
+                      id="game-details"
+                      placeholder="Detay Mesajı (örn: 1. Bölüm)"
+                      class="w-full px-6 py-3 bg-gray-900/50 rounded-xl border border-indigo-500/30 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
+                    />
+                    <input
+                      type="text"
+                      id="game-state"
+                      placeholder="Durum Mesajı (örn: Solo Oynuyor)"
+                      class="w-full px-6 py-3 bg-gray-900/50 rounded-xl border border-indigo-500/30 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
+                    />
+                    <input
+                      type="text"
+                      id="game-url"
+                      placeholder="Yayın URL (Sadece yayın modunda gerekli)"
+                      class="w-full px-6 py-3 bg-gray-900/50 rounded-xl border border-indigo-500/30 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
+                    />
+                  </div>
+
+                  <!-- Images Section -->
+                  <div class="glass rounded-xl p-6 space-y-4">
+                    <h3 class="font-medium text-indigo-400 mb-4">Resimler</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div class="space-y-4">
+                        <input
+                          type="text"
+                          id="large-image"
+                          placeholder="Büyük Resim ID/URL"
+                          class="w-full px-6 py-3 bg-gray-900/50 rounded-xl border border-indigo-500/30 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
+                        />
+                        <input
+                          type="text"
+                          id="large-text"
+                          placeholder="Büyük Resim Açıklaması"
+                          class="w-full px-6 py-3 bg-gray-900/50 rounded-xl border border-indigo-500/30 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
+                        />
+                      </div>
+                      <div class="space-y-4">
+                        <input
+                          type="text"
+                          id="small-image"
+                          placeholder="Küçük Resim ID/URL"
+                          class="w-full px-6 py-3 bg-gray-900/50 rounded-xl border border-indigo-500/30 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
+                        />
+                        <input
+                          type="text"
+                          id="small-text"
+                          placeholder="Küçük Resim Açıklaması"
+                          class="w-full px-6 py-3 bg-gray-900/50 rounded-xl border border-indigo-500/30 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Buttons Section -->
+                  <div class="glass rounded-xl p-6 space-y-4">
+                    <h3 class="font-medium text-indigo-400 mb-4">Butonlar</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div class="space-y-4">
+                        <input
+                          type="text"
+                          id="button1-label"
+                          placeholder="1. Buton Etiketi"
+                          class="w-full px-6 py-3 bg-gray-900/50 rounded-xl border border-indigo-500/30 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
+                        />
+                        <input
+                          type="text"
+                          id="button1-url"
+                          placeholder="1. Buton URL"
+                          class="w-full px-6 py-3 bg-gray-900/50 rounded-xl border border-indigo-500/30 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
+                        />
+                      </div>
+                      <div class="space-y-4">
+                        <input
+                          type="text"
+                          id="button2-label"
+                          placeholder="2. Buton Etiketi"
+                          class="w-full px-6 py-3 bg-gray-900/50 rounded-xl border border-indigo-500/30 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
+                        />
+                        <input
+                          type="text"
+                          id="button2-url"
+                          placeholder="2. Buton URL"
+                          class="w-full px-6 py-3 bg-gray-900/50 rounded-xl border border-indigo-500/30 focus:outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Butonlar -->
+            <div class="flex justify-between items-center pt-4">
+              <div class="flex items-center space-x-3">
+                <button
+                  onclick="setGame()"
+                  class="bg-indigo-600 hover:bg-indigo-500 text-white font-medium py-2.5 px-6 rounded-xl transition-all transform hover:scale-[1.02] active:scale-[0.98] flex items-center space-x-2"
+                >
+                  <svg
+                    class="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"
+                    />
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                  <span>Durumu Ayarla</span>
+                </button>
+
+                <button
+                  onclick="saveSettings()"
+                  class="bg-green-600 hover:bg-green-500 text-white font-medium py-2.5 px-6 rounded-xl transition-all transform hover:scale-[1.02] active:scale-[0.98] flex items-center space-x-2"
+                >
+                  <svg
+                    class="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M5 13l4 4L19 7"
+                    />
+                  </svg>
+                  <span>Ayarları Kaydet</span>
+                </button>
+              </div>
+
+              <button
+                onclick="logout()"
+                class="bg-red-600 hover:bg-red-500 text-white font-medium py-2.5 px-6 rounded-xl transition-all transform hover:scale-[1.02] active:scale-[0.98] flex items-center space-x-2 ml-3"
+              >
+                <svg
+                  class="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                  />
+                </svg>
+                <span>Çıkış Yap</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Status Messages -->
+        <div id="status" class="hidden mt-6 p-4 rounded-xl"></div>
+      </div>
+    </div>
+
+    <script>
+      const { ipcRenderer } = require("electron");
+
+      function toggleDetails() {
+        const content = document.getElementById("details-content");
+        const arrow = document.getElementById("arrow");
+        content.classList.toggle("hidden");
+        arrow.classList.toggle("rotate-180");
+      }
+
+      function setToken() {
+        const token = document.getElementById("token").value;
+        ipcRenderer.send("set-token", token);
+      }
+
+      function setGame() {
+        const gameName = document.getElementById("game-name").value;
+        const gameType = document.getElementById("game-type").value;
+        const gameDetails = document.getElementById("game-details").value;
+        const gameState = document.getElementById("game-state").value;
+        const gameUrl = document.getElementById("game-url").value;
+
+        const largeImage = document.getElementById("large-image").value;
+        const largeText = document.getElementById("large-text").value;
+        const smallImage = document.getElementById("small-image").value;
+        const smallText = document.getElementById("small-text").value;
+
+        const button1Label = document.getElementById("button1-label").value;
+        const button1Url = document.getElementById("button1-url").value;
+        const button2Label = document.getElementById("button2-label").value;
+        const button2Url = document.getElementById("button2-url").value;
+
+        const buttons = [];
+        if (button1Label && button1Url) {
+          try {
+            const url = new URL(button1Url);
+            if (url.protocol === "http:" || url.protocol === "https:") {
+              buttons.push({
+                name: button1Label.substring(0, 32),
+                url: button1Url,
+              });
+            }
+          } catch (e) {
+            console.error("Geçersiz URL:", button1Url);
+          }
+        }
+
+        if (button2Label && button2Url) {
+          try {
+            const url = new URL(button2Url);
+            if (url.protocol === "http:" || url.protocol === "https:") {
+              buttons.push({
+                name: button2Label.substring(0, 32),
+                url: button2Url,
+              });
+            }
+          } catch (e) {
+            console.error("Geçersiz URL:", button2Url);
+          }
+        }
+
+        const activityData = {
+          name: gameName,
+          type: parseInt(gameType),
+          details: gameDetails || undefined,
+          state: gameState || undefined,
+          url: gameType === "1" ? gameUrl : undefined,
+          assets: {
+            large_image: largeImage || undefined,
+            large_text: largeText || undefined,
+            small_image: smallImage || undefined,
+            small_text: smallText || undefined,
+          },
+          buttons: buttons.length > 0 ? buttons : undefined,
+        };
+
+        console.log("Gönderilecek aktivite verisi:", activityData);
+        ipcRenderer.send("set-game", activityData);
+      }
+
+      function showStatus(message, isError = false) {
+        const statusDiv = document.getElementById("status");
+        statusDiv.textContent = message;
+        statusDiv.style.display = "block";
+        statusDiv.className = `mt-4 p-4 rounded-lg text-gray-900 font-medium ${
+          isError ? "bg-red-400" : "bg-green-400"
+        }`;
+      }
+
+      function saveSettings() {
+        const gameName = document.getElementById("game-name").value;
+        const gameType = document.getElementById("game-type").value;
+        const gameDetails = document.getElementById("game-details").value;
+        const gameState = document.getElementById("game-state").value;
+        const gameUrl = document.getElementById("game-url").value;
+
+        const largeImage = document.getElementById("large-image").value;
+        const largeText = document.getElementById("large-text").value;
+        const smallImage = document.getElementById("small-image").value;
+        const smallText = document.getElementById("small-text").value;
+
+        const button1Label = document.getElementById("button1-label").value;
+        const button1Url = document.getElementById("button1-url").value;
+        const button2Label = document.getElementById("button2-label").value;
+        const button2Url = document.getElementById("button2-url").value;
+
+        const gameData = {
+          name: gameName,
+          type: parseInt(gameType),
+          details: gameDetails || undefined,
+          state: gameState || undefined,
+          url: gameType === "1" ? gameUrl : undefined,
+          assets: {
+            large_image: largeImage || undefined,
+            large_text: largeText || undefined,
+            small_image: smallImage || undefined,
+            small_text: smallText || undefined,
+          },
+          buttons: [],
+        };
+
+        if (button1Label && button1Url) {
+          gameData.buttons.push({
+            name: button1Label,
+            url: button1Url,
+          });
+        }
+
+        if (button2Label && button2Url) {
+          gameData.buttons.push({
+            name: button2Label,
+            url: button2Url,
+          });
+        }
+
+        if (gameData.buttons.length === 0) {
+          delete gameData.buttons;
+        }
+
+        ipcRenderer.send("save-settings", gameData);
+      }
+
+      function logout() {
+        ipcRenderer.send("logout");
+      }
+
+      function loadSavedSettings(settings) {
+        if (!settings) return;
+
+        // Temel alanlar
+        document.getElementById("game-name").value = settings.name || "";
+        document.getElementById("game-type").value =
+          settings.type?.toString() || "0";
+        document.getElementById("game-details").value = settings.details || "";
+        document.getElementById("game-state").value = settings.state || "";
+        document.getElementById("game-url").value = settings.url || "";
+
+        // Resimler
+        if (settings.assets) {
+          document.getElementById("large-image").value =
+            settings.assets.large_image || "";
+          document.getElementById("large-text").value =
+            settings.assets.large_text || "";
+          document.getElementById("small-image").value =
+            settings.assets.small_image || "";
+          document.getElementById("small-text").value =
+            settings.assets.small_text || "";
+        }
+
+        // Butonlar
+        if (settings.buttons && settings.buttons.length > 0) {
+          if (settings.buttons[0]) {
+            document.getElementById("button1-label").value =
+              settings.buttons[0].name || "";
+            document.getElementById("button1-url").value =
+              settings.buttons[0].url || "";
+          }
+          if (settings.buttons[1]) {
+            document.getElementById("button2-label").value =
+              settings.buttons[1].name || "";
+            document.getElementById("button2-url").value =
+              settings.buttons[1].url || "";
+          }
+        }
+
+        // Detaylı ayarlar panelini aç
+        if (
+          settings.details ||
+          settings.state ||
+          settings.url ||
+          settings.assets ||
+          settings.buttons
+        ) {
+          const content = document.getElementById("details-content");
+          const arrow = document.getElementById("arrow");
+          content.classList.remove("hidden");
+          arrow.classList.add("rotate-180");
+        }
+
+        // Önizlemeyi güncelle
+        updatePreview();
+      }
+
+      ipcRenderer.on("login-status", (event, response) => {
+        if (response.success) {
+          document.getElementById("token-section").style.display = "none";
+          document.getElementById("how-to-get-token").style.display = "none";
+          document.getElementById("game-section").style.display = "block";
+
+          // Kullanıcı bilgilerini güncelle
+          if (response.userInfo) {
+            document.getElementById("user-avatar").src =
+              response.userInfo.avatar;
+            document.getElementById("user-name").textContent =
+              response.userInfo.username;
+            document.getElementById(
+              "user-discriminator"
+            ).textContent = `#${response.userInfo.discriminator}`;
+            document.getElementById("user-id").textContent =
+              response.userInfo.id;
+            document.getElementById("user-created").textContent = new Date(
+              response.userInfo.createdAt
+            ).toLocaleDateString("tr-TR");
+
+            // Banner'ı ayarla
+            const bannerElement = document.getElementById("user-banner");
+            if (response.userInfo.banner) {
+              bannerElement.style.backgroundImage = `url('${response.userInfo.banner}')`;
+              bannerElement.style.backgroundSize = "cover";
+              bannerElement.style.backgroundPosition = "center";
+              bannerElement.className = "absolute inset-0 backdrop-blur-sm";
+            } else {
+              // Banner yoksa varsayılan gradient'i kullan
+              bannerElement.style.backgroundImage = "none";
+              bannerElement.className =
+                "absolute inset-0 backdrop-blur-sm bg-opacity-50";
+            }
+
+            // Status rengini ayarla
+            const statusColors = {
+              online: "bg-green-500",
+              idle: "bg-yellow-500",
+              dnd: "bg-red-500",
+              offline: "bg-gray-500",
+            };
+            const statusElement = document.getElementById("user-status");
+            statusElement.className = `status-indicator ${
+              statusColors[response.userInfo.status]
+            }`;
+          }
+
+          if (response.savedSettings) {
+            loadSavedSettings(response.savedSettings);
+          }
+          showStatus("Discord'a başarıyla giriş yapıldı!");
+        } else {
+          showStatus("Giriş başarısız: " + response.error, true);
+        }
+      });
+
+      ipcRenderer.on("game-status", (event, response) => {
+        if (response.success) {
+          let message = "Oyun durumu başarıyla güncellendi!";
+          if (response.warning) {
+            message += "\n" + response.warning;
+          }
+          showStatus(message);
+        } else {
+          showStatus("Hata: " + response.error, true);
+        }
+      });
+
+      ipcRenderer.on("save-status", (event, response) => {
+        if (response.success) {
+          showStatus("Ayarlar başarıyla kaydedildi!");
+        } else {
+          showStatus("Ayarlar kaydedilemedi: " + response.error, true);
+        }
+      });
+
+      ipcRenderer.on("logout-status", (event, response) => {
+        if (response.success) {
+          document.getElementById("token-section").style.display = "block";
+          document.getElementById("how-to-get-token").style.display = "block";
+          document.getElementById("game-section").style.display = "none";
+          document.getElementById("token").value = "";
+          showStatus("Başarıyla çıkış yapıldı!");
+        }
+      });
+
+      ipcRenderer.on("auto-login", (event, response) => {
+        if (response.success) {
+          document.getElementById("token").value = response.token;
+          document.getElementById("token-section").style.display = "none";
+          document.getElementById("how-to-get-token").style.display = "none";
+          document.getElementById("game-section").style.display = "block";
+
+          // Kullanıcı bilgilerini güncelle
+          if (response.userInfo) {
+            document.getElementById("user-avatar").src =
+              response.userInfo.avatar;
+            document.getElementById("user-name").textContent =
+              response.userInfo.username;
+            document.getElementById(
+              "user-discriminator"
+            ).textContent = `#${response.userInfo.discriminator}`;
+            document.getElementById("user-id").textContent =
+              response.userInfo.id;
+            document.getElementById("user-created").textContent = new Date(
+              response.userInfo.createdAt
+            ).toLocaleDateString("tr-TR");
+
+            // Banner'ı ayarla
+            const bannerElement = document.getElementById("user-banner");
+            if (response.userInfo.banner) {
+              bannerElement.style.backgroundImage = `url('${response.userInfo.banner}')`;
+              bannerElement.style.backgroundSize = "cover";
+              bannerElement.style.backgroundPosition = "center";
+              bannerElement.className = "absolute inset-0 backdrop-blur-sm";
+            } else {
+              // Banner yoksa varsayılan gradient'i kullan
+              bannerElement.style.backgroundImage = "none";
+              bannerElement.className =
+                "absolute inset-0 backdrop-blur-sm bg-opacity-50";
+            }
+
+            // Status rengini ayarla
+            const statusColors = {
+              online: "bg-green-500",
+              idle: "bg-yellow-500",
+              dnd: "bg-red-500",
+              offline: "bg-gray-500",
+            };
+            const statusElement = document.getElementById("user-status");
+            statusElement.className = `status-indicator ${
+              statusColors[response.userInfo.status]
+            }`;
+          }
+
+          if (response.savedSettings) {
+            loadSavedSettings(response.savedSettings);
+          }
+          showStatus("Otomatik giriş yapıldı!");
+        }
+      });
+
+      // Önizleme güncellemesi için fonksiyonu güncelle
+      function updatePreview() {
+        const gameName = document.getElementById("game-name").value;
+        const gameType = document.getElementById("game-type").value;
+        const gameDetails = document.getElementById("game-details").value;
+        const gameState = document.getElementById("game-state").value;
+        const button1Label = document.getElementById("button1-label").value;
+        const button1Url = document.getElementById("button1-url").value;
+        const button2Label = document.getElementById("button2-label").value;
+        const button2Url = document.getElementById("button2-url").value;
+
+        const typeTexts = {
+          0: "Oynuyor",
+          1: "Yayında",
+          2: "Dinliyor",
+          3: "İzliyor",
+          5: "Yarışıyor",
+        };
+
+        // Ana içeriği güncelle
+        document.getElementById(
+          "preview-game"
+        ).textContent = `${typeTexts[gameType]} ${gameName}`;
+        document.getElementById("preview-details").textContent = gameDetails;
+        document.getElementById("preview-state").textContent = gameState;
+
+        // Butonları güncelle
+        const previewContent = document.getElementById("preview-content");
+
+        // Mevcut butonları temizle
+        const oldButtons = previewContent.querySelector(".preview-buttons");
+        if (oldButtons) oldButtons.remove();
+
+        // Eğer buton varsa yeni butonları ekle
+        if (button1Label || button2Label) {
+          const buttonsDiv = document.createElement("div");
+          buttonsDiv.className = "preview-buttons flex flex-col space-y-2 mt-3";
+
+          if (button1Label && button1Url) {
+            const button1 = document.createElement("div");
+            button1.className =
+              "bg-indigo-600/30 hover:bg-indigo-600/40 text-xs text-white font-medium px-4 py-2 rounded-md cursor-pointer transition-colors flex items-center justify-center";
+            button1.innerHTML = button1Label;
+            buttonsDiv.appendChild(button1);
+          }
+
+          if (button2Label && button2Url) {
+            const button2 = document.createElement("div");
+            button2.className =
+              "bg-indigo-600/30 hover:bg-indigo-600/40 text-xs text-white font-medium px-4 py-2 rounded-md cursor-pointer transition-colors flex items-center justify-center";
+            button2.innerHTML = button2Label;
+            buttonsDiv.appendChild(button2);
+          }
+
+          previewContent.appendChild(buttonsDiv);
+        }
+      }
+
+      // Input event listener'ları güncelle
+      [
+        "game-name",
+        "game-type",
+        "game-details",
+        "game-state",
+        "button1-label",
+        "button1-url",
+        "button2-label",
+        "button2-url",
+      ].forEach((id) => {
+        const element = document.getElementById(id);
+        if (element) {
+          element.addEventListener("input", updatePreview);
+          element.addEventListener("change", updatePreview);
+        }
+      });
+    </script>
+  </body>
+</html>
