@@ -1,4 +1,4 @@
-# NexRPC 2
+# NexRPC V2
 
 Windows/VDS odaklı, Discord masaüstü istemcisi gerektirmeden kullanıcı hesabı üzerinden Rich Presence yönetmek için hazırlanmış Electron uygulaması.
 
@@ -61,7 +61,7 @@ npm run dist:win
 Electron `userData` klasöründe tutulur. Windows'ta tipik olarak:
 
 ```text
-%APPDATA%\NexRPC\
+%APPDATA%\nexrpc-2\
 ```
 
 Burada:
@@ -89,6 +89,44 @@ Electron Main Process
 ```
 
 Renderer doğrudan Node.js API'lerine veya Discord tokenına erişemez. Uygulama herhangi bir HTTP sunucusu veya dinleyen TCP portu açmaz.
+
+## Token alma (konsol / manuel yöntem)
+
+Aşağıdaki snippet, Discord web/desktop ortamında geliştirme konsolundan tokeni bulmaya yarayan klasik bir yöntemdir. Kullanıcı sorumluluğu ile ve yalnızca kendi hesabı için kullanılmalıdır.
+
+```js
+window.webpackChunkdiscord_app.push([
+  [Symbol()],
+  {},
+  req => {
+    if (!req.c) return;
+    for (let m of Object.values(req.c)) {
+      try {
+        if (!m.exports || m.exports === window) continue;
+        if (m.exports?.getToken) return copy(m.exports.getToken());
+        for (let ex in m.exports) {
+          if (m.exports?.[ex]?.getToken && m.exports[ex][Symbol.toStringTag] !== 'IntlMessagesProxy') return copy(m.exports[ex].getToken());
+        }
+      } catch {}
+    }
+  },
+]);
+
+window.webpackChunkdiscord_app.pop();
+console.log('%cHata yok!', 'font-size: 50px');
+console.log(`%cToken panoya kopyalandı!`, 'font-size: 16px');
+```
+
+### Kullanım
+
+1. Discord uygulamasını aç.
+2. F12 ile Geliştirici Araçları'na gir.
+3. Konsol sekmesine geç.
+4. Kodu yapıştırıp Enter'a bas.
+5. Token otomatik olarak panoya kopyalanır.
+6. Kopyalanan değeri NexRPC içinde ilgili alana yapıştır.
+
+> Bu yöntem güvenlik riski taşır. Tokeni asla paylaşma, log dosyalarına yazma veya GitHub gibi herkese açık alanlara koyma.
 
 ## Notlar
 

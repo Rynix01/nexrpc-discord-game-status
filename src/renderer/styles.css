@@ -36,9 +36,10 @@ button { cursor: pointer; }
 .brand { display: flex; gap: 12px; align-items: center; padding: 0 8px 24px; }
 .brand-mark {
   width: 38px; height: 38px; border-radius: 11px;
-  display: grid; place-items: center; font-weight: 900; color: #15100a;
+  display: block; object-fit: cover;
   background: linear-gradient(135deg, var(--accent-2), var(--accent));
   box-shadow: 0 0 24px rgba(245,158,11,.18);
+  border: 1px solid rgba(255,255,255,.06);
 }
 .brand-title { font-weight: 800; font-size: 18px; letter-spacing: .2px; }
 .brand-sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
