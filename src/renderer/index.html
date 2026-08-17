@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'none'; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'none';" />
+  <title>NexRPC</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark">N</div>
+        <div>
+          <div class="brand-title">NexRPC</div>
+          <div class="brand-sub">Rich Presence Manager</div>
+        </div>
+      </div>
+
+      <nav class="nav" id="nav">
+        <button class="nav-item active" data-page="dashboard"><span>◈</span> Dashboard</button>
+        <button class="nav-item" data-page="accounts"><span>◎</span> Accounts</button>
+        <button class="nav-item" data-page="profiles"><span>◆</span> Profiles</button>
+        <button class="nav-item" data-page="scheduler"><span>◷</span> Scheduler</button>
+        <button class="nav-item" data-page="logs"><span>≡</span> Logs</button>
+        <button class="nav-item" data-page="settings"><span>⚙</span> Settings</button>
+      </nav>
+
+      <div class="sidebar-bottom">
+        <div class="security-pill"><span class="dot good"></span> Renderer offline</div>
+        <div class="version">NexRPC 2.0.0</div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div>
+          <h1 id="page-title">Dashboard</h1>
+          <p id="page-subtitle">Discord hesaplarını ve aktif durumları yönet.</p>
+        </div>
+        <div class="top-actions">
+          <button class="btn ghost" id="connect-all">Tümünü Bağla</button>
+          <button class="btn danger-soft" id="disconnect-all">Tümünü Kes</button>
+        </div>
+      </header>
+
+      <section id="page-dashboard" class="page active">
+        <div id="warning-banner" class="warning-banner hidden"></div>
+        <div class="stats-grid" id="stats-grid"></div>
+        <div class="section-head">
+          <div>
+            <h2>Hesaplar</h2>
+            <p>Bağlantı, ping ve aktif profil durumu.</p>
+          </div>
+        </div>
+        <div class="cards-grid" id="dashboard-accounts"></div>
+      </section>
+
+      <section id="page-accounts" class="page">
+        <div class="split-grid account-layout">
+          <div class="panel">
+            <div class="panel-head">
+              <div>
+                <h2>Yeni hesap ekle</h2>
+                <p>Token renderer tarafında saklanmaz; main process'e gönderilip şifrelenir.</p>
+              </div>
+            </div>
+            <form id="account-form" class="form-grid single">
+              <label>Hesap etiketi
+                <input id="account-label" maxlength="80" placeholder="Örn: Rynix" required />
+              </label>
+              <label>Discord token
+                <input id="account-token" type="password" autocomplete="off" placeholder="Token" required />
+              </label>
+              <label>Başlangıç profili
+                <select id="account-profile"></select>
+              </label>
+              <label class="check-row"><input id="account-auto" type="checkbox" checked /> Uygulama açılınca otomatik bağlan</label>
+              <label class="check-row"><input id="account-connect-now" type="checkbox" checked /> Ekleyince hemen bağlan</label>
+              <button class="btn primary" type="submit">Hesabı Ekle</button>
+            </form>
+          </div>
+
+          <div class="panel grow">
+            <div class="panel-head">
+              <div>
+                <h2>Kayıtlı hesaplar</h2>
+                <p id="accounts-count">0 hesap</p>
+              </div>
+            </div>
+            <div id="accounts-list" class="stack"></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="page-profiles" class="page">
+        <div class="profile-layout">
+          <div class="panel editor-panel">
+            <div class="panel-head">
+              <div>
+                <h2>Presence profili</h2>
+                <p>Oynuyor / dinliyor / izliyor bilgilerini düzenle.</p>
+              </div>
+              <button id="profile-new" class="btn ghost small" type="button">Yeni</button>
+            </div>
+
+            <form id="profile-form" class="form-grid two">
+              <input id="profile-id" type="hidden" />
+              <label>Profil adı
+                <input id="profile-name" maxlength="80" placeholder="Minecraft" required />
+              </label>
+              <label>Application ID
+                <input id="profile-app-id" placeholder="1310982134344847391" />
+              </label>
+              <label>Aktivite adı
+                <input id="profile-activity-name" maxlength="128" placeholder="Minecraft" required />
+              </label>
+              <label>Tür
+                <select id="profile-type">
+                  <option value="PLAYING">Oynuyor</option>
+                  <option value="STREAMING">Yayında</option>
+                  <option value="LISTENING">Dinliyor</option>
+                  <option value="WATCHING">İzliyor</option>
+                  <option value="COMPETING">Yarışıyor</option>
+                </select>
+              </label>
+              <label>Durum
+                <select id="profile-status">
+                  <option value="online">Çevrimiçi</option>
+                  <option value="idle">Boşta</option>
+                  <option value="dnd">Rahatsız Etmeyin</option>
+                  <option value="invisible">Görünmez</option>
+                </select>
+              </label>
+              <label>Streaming URL
+                <input id="profile-stream-url" placeholder="https://twitch.tv/..." />
+              </label>
+              <label class="span-2">Details
+                <input id="profile-details" maxlength="128" placeholder="Nexuby Network" />
+              </label>
+              <label class="span-2">State
+                <input id="profile-state" maxlength="128" placeholder="mc.nexuby.net.tr" />
+              </label>
+              <label>Large image
+                <input id="profile-large-image" placeholder="asset key veya URL" />
+              </label>
+              <label>Large text
+                <input id="profile-large-text" maxlength="128" placeholder="Minecraft" />
+              </label>
+              <label>Small image
+                <input id="profile-small-image" placeholder="asset key veya URL" />
+              </label>
+              <label>Small text
+                <input id="profile-small-text" maxlength="128" placeholder="NexRPC" />
+              </label>
+              <label>Buton 1 yazısı
+                <input id="profile-button1-label" maxlength="32" placeholder="Site" />
+              </label>
+              <label>Buton 1 URL
+                <input id="profile-button1-url" placeholder="https://..." />
+              </label>
+              <label>Buton 2 yazısı
+                <input id="profile-button2-label" maxlength="32" placeholder="Discord" />
+              </label>
+              <label>Buton 2 URL
+                <input id="profile-button2-url" placeholder="https://..." />
+              </label>
+              <label class="check-row span-2"><input id="profile-elapsed" type="checkbox" checked /> Geçen süreyi göster</label>
+              <div class="form-actions span-2">
+                <button class="btn primary" type="submit">Profili Kaydet</button>
+                <button class="btn ghost" id="profile-import" type="button">İçe Aktar</button>
+              </div>
+            </form>
+          </div>
+
+          <div class="panel profile-list-panel">
+            <div class="panel-head">
+              <div>
+                <h2>Profiller</h2>
+                <p id="profiles-count">0 profil</p>
+              </div>
+            </div>
+            <div id="profiles-list" class="stack"></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="page-scheduler" class="page">
+        <div class="split-grid scheduler-layout">
+          <div class="panel">
+            <div class="panel-head">
+              <div>
+                <h2>Yeni zamanlama</h2>
+                <p>Belirlenen saatte seçilen profile geç.</p>
+              </div>
+            </div>
+            <form id="schedule-form" class="form-grid single">
+              <label>Kural adı
+                <input id="schedule-name" maxlength="80" placeholder="Akşam Minecraft" required />
+              </label>
+              <label>Hesap
+                <select id="schedule-account" required></select>
+              </label>
+              <label>Profil
+                <select id="schedule-profile" required></select>
+              </label>
+              <label>Saat
+                <input id="schedule-time" type="time" required value="20:00" />
+              </label>
+              <div>
+                <span class="label-title">Günler</span>
+                <div class="days" id="schedule-days">
+                  <label><input type="checkbox" value="1" checked /> Pzt</label>
+                  <label><input type="checkbox" value="2" checked /> Sal</label>
+                  <label><input type="checkbox" value="3" checked /> Çar</label>
+                  <label><input type="checkbox" value="4" checked /> Per</label>
+                  <label><input type="checkbox" value="5" checked /> Cum</label>
+                  <label><input type="checkbox" value="6" checked /> Cmt</label>
+                  <label><input type="checkbox" value="0" checked /> Paz</label>
+                </div>
+              </div>
+              <button class="btn primary" type="submit">Kural Ekle</button>
+            </form>
+          </div>
+          <div class="panel grow">
+            <div class="panel-head">
+              <div>
+                <h2>Kurallar</h2>
+                <p>15 saniyede bir yerel saat kontrol edilir.</p>
+              </div>
+            </div>
+            <div id="schedule-list" class="stack"></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="page-logs" class="page">
+        <div class="panel log-panel">
+          <div class="panel-head">
+            <div>
+              <h2>Çalışma günlükleri</h2>
+              <p>Bağlantı, reconnect, scheduler ve presence olayları.</p>
+            </div>
+            <button id="clear-logs" class="btn danger-soft small">Temizle</button>
+          </div>
+          <div id="logs-view" class="logs-view"></div>
+        </div>
+      </section>
+
+      <section id="page-settings" class="page">
+        <div class="settings-grid">
+          <div class="panel">
+            <div class="panel-head"><div><h2>Uygulama</h2><p>VDS davranışı ve otomatik başlatma.</p></div></div>
+            <div class="settings-list">
+              <label class="setting-row"><div><b>Tray'e küçült</b><span>X'e basınca bağlantılar açık kalsın.</span></div><input id="setting-tray" type="checkbox" /></label>
+              <label class="setting-row"><div><b>Windows ile başlat</b><span>Oturum açılınca NexRPC açılsın.</span></div><input id="setting-startup" type="checkbox" /></label>
+              <label class="setting-row"><div><b>Minimize başlat</b><span>Başlangıçta pencereyi gösterme.</span></div><input id="setting-minimized" type="checkbox" /></label>
+              <label class="setting-row"><div><b>Askıya alınmayı engelle</b><span>VDS'de uygulamanın uyutulmasını önlemeye çalışır.</span></div><input id="setting-awake" type="checkbox" /></label>
+              <label class="setting-row"><div><b>Otomatik reconnect</b><span>Bağlantı düştüğünde kademeli yeniden dene.</span></div><input id="setting-reconnect" type="checkbox" /></label>
+            </div>
+          </div>
+
+          <div class="panel security-panel">
+            <div class="panel-head"><div><h2>Güvenlik</h2><p>Bu build'de bilinçli olarak kapatılan yüzeyler.</p></div></div>
+            <ul class="security-list">
+              <li><span class="dot good"></span> HTTP / localhost panel yok</li>
+              <li><span class="dot good"></span> Renderer'da Node.js kapalı</li>
+              <li><span class="dot good"></span> contextIsolation açık</li>
+              <li><span class="dot good"></span> Renderer internet erişimi CSP ile kapalı</li>
+              <li><span class="dot good"></span> Token safeStorage ile işletim sistemi anahtarıyla şifreli</li>
+              <li><span class="dot warn"></span> Discord kullanıcı hesabı otomasyonu resmi olarak desteklenmez</li>
+            </ul>
+            <button id="quit-app" class="btn danger">NexRPC'yi Tamamen Kapat</button>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div id="toast" class="toast"></div>
+  <script src="app.js"></script>
+</body>
+</html>
